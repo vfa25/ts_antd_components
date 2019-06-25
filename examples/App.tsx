@@ -1,12 +1,17 @@
 import React from 'react';
-import { hot } from 'react-hot-loader';
+import { hot } from 'react-hot-loader/root';
+import Components from './demoComponents';
+
+const e = React.createElement;
 
 export interface AppProps { compiler: string; framework: string; }
 
 class App extends React.Component<AppProps, {}> {
   render() {
-    return 2;
+    return Object.keys(Components).map(
+      name => e(Components[name], {key: name}, null)
+    );
   }
 }
 
-export default hot(module)(App);
+export default hot(App);

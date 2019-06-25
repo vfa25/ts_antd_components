@@ -15,6 +15,7 @@ const config = {
     extensions: ['.tsx', '.ts', '.js', '.json'],
     alias: {
       '@components': path.resolve(__dirname, '../src'),
+      'react-dom': '@hot-loader/react-dom',
     },
   },
   module: {
@@ -67,8 +68,8 @@ const config = {
       {
         test: /\.css$/,
         use: [
-          'style-loader', 'css-loader'
-        ]
+          'style-loader', 'css-loader',
+        ],
       },
       {
         test: /\.(png|jpg|gif|svg)$/, // url-loader所有配置不符合limit时自动降级file-loader

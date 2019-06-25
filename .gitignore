@@ -38,3 +38,6 @@ coverage
 /es/
 package-lock.json
 .cdnkey
+.awcache
+.rpt2_cache
+docs
