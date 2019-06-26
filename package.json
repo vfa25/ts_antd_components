@@ -3,28 +3,27 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/ts-antd-components.umd.js",
-  "module": "dist/ts-antd-components.es5.js",
-  "typings": "dist/types/ts-antd-components.d.ts",
+  "main": "dist/antd-abukii.umd.js",
+  "module": "dist/antd-abukii.es5.js",
+  "typings": "dist/types/index.d.ts",
   "files": [
     "dist"
   ],
   "author": "zhangxin <heermosi39@163.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/vfa25/ts_antd_components.git"
   },
   "license": "MIT",
   "engines": {
     "node": ">=6.0.0"
   },
   "scripts": {
+    "pub": "git push origin && npm publish",
     "dev": "cross-env npx webpack-dev-server --mode=development --config examples/webpack.config.js",
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lint:js": "eslint --fix --ext .jsx --ext .js ./examples",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
-    "start": "rollup -c rollup.config.ts -w",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",
@@ -86,20 +85,24 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-runtime": "6.x",
+    "classnames": "^2.2.6",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-lifecycles-compat": "^3.0.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
     "@hot-loader/react-dom": "^16.8.6",
+    "@types/classnames": "^2.2.8",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.14.10",
     "@types/react": "^16.8.12",
     "@types/react-dom": "^16.8.3",
+    "@types/react-lifecycles-compat": "^3.0.1",
     "@types/webpack": "^4.4.27",
     "@types/webpack-env": "^1.13.9",
     "@webpack-cli/init": "^0.1.5",
@@ -137,12 +140,6 @@
     "react-hot-loader": "^4.8.2",
     "replace-in-file": "^3.4.2",
     "rimraf": "^2.6.2",
-    "rollup": "^0.67.0",
-    "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-typescript2": "^0.18.0",
     "semantic-release": "^15.9.16",
     "shelljs": "^0.8.3",
     "source-map-loader": "^0.2.4",
