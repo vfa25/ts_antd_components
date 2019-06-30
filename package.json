@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "author": "zhangxin <heermosi39@163.com>",
+  "author": "vfa25",
   "repository": {
     "type": "git",
     "url": "https://github.com/vfa25/ts_antd_components.git"
@@ -33,7 +33,9 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once",
+    "clean": "bubai run clean",
+    "dist": "bubai run dist"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -85,7 +87,9 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-runtime": "6.x",
+    "bubai": "^0.0.1",
     "classnames": "^2.2.6",
+    "create-react-context": "^0.3.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { polyfill } from 'react-lifecycles-compat';
 import { tuple } from '../_util/type';
+import { ConfigConsumer, ConfigConsumerProps } from '../config-provider';
 
 
 const rxTwoCNChar = /^[\u4e00-\u9fa5]{2}$/;
@@ -66,6 +67,8 @@ export type ButtonType = (typeof ButtonTypes)[number];
 export interface BaseButtonProps {
   type?: ButtonType;
   loading?: boolean | { delay?: number };
+  prefixCls?: string;
+  className?: string;
 }
 
 // 定义交差类型
@@ -77,6 +80,7 @@ export type ButtonProps = Partial<AnchorButtonProps>;
 
 interface ButtonState {
   loading?: boolean | { delay?: number };
+  hasTwoCNChar?: boolean;
 }
 
 class Button extends React.Component<ButtonProps, ButtonState> {
@@ -87,6 +91,7 @@ class Button extends React.Component<ButtonProps, ButtonState> {
   static propTypes = {
     type: PropTypes.string,
     loading: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    className: PropTypes.string,
   }
 
   static getDerivedStateFromProps(nextProps: ButtonProps, prevState: ButtonState) {
@@ -99,10 +104,42 @@ class Button extends React.Component<ButtonProps, ButtonState> {
     return null;
   }
 
-  constructor(props) {
+  private buttonNode: HTMLElement | null;
+
+  constructor(props: ButtonProps) {
     super(props);
     this.state = {
       loading: props.loading,
+      hasTwoCNChar: false,
+    }
+  }
+
+  componentDidMount() {
+    this.fixTwoCNChar();
+  }
+
+  // 缓存ref
+  saveButtonRef = (node: HTMLElement | null) => {
+    this.buttonNode = node;
+  }
+
+  fixTwoCNChar() {
+    // 边缘情况处理
+    // Fix for HOC usage like <FormatMessage />
+    if (!this.buttonNode) {
+      return;
+    }
+    const buttonText = this.buttonNode.textContent || this.buttonNode.innerHTML;
+    if (this.isNeedInserted() && isTwoCNChar(buttonText)) {
+      if (!this.state.hasTwoCNChar) {
+        this.setState({
+          hasTwoCNChar: true,
+        })
+      }
+    } else if (this.state.hasTwoCNChar) {
+      this.setState({
+        hasTwoCNChar: false,
+      })
     }
   }
 
@@ -111,13 +148,18 @@ class Button extends React.Component<ButtonProps, ButtonState> {
     return React.Children.count(children) === 1;
   }
 
-  renderButton = () => {
+  renderButton = ({ getPrefixCls, autoInsertSpaceInButton }: ConfigConsumerProps) => {
     const {
+      prefixCls: customizePrefixCls,
       type,
       children,
+      className,
       ...rest
     } = this.props;
-    const { loading } = this.state;
+    const { loading, hasTwoCNChar } = this.state;
+
+    const prefixCls = getPrefixCls('btn', customizePrefixCls);
+    const autoInsertSpace = autoInsertSpaceInButton !== false;
 
     // large => lg
     // small => sm
@@ -126,8 +168,9 @@ class Button extends React.Component<ButtonProps, ButtonState> {
     //   case ''
     // }
 
-    const classes = classNames('ant-btn', {
-      [`ant-btn-${type}`]: type,
+    const classes = classNames(prefixCls, className, {
+      [`${prefixCls}-${type}`]: type,
+      [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace,
     })
 
     const kids =
@@ -140,6 +183,7 @@ class Button extends React.Component<ButtonProps, ButtonState> {
     const bottonNode = (
       <button
         className={classes}
+        ref={this.saveButtonRef}
       >
         {kids}
       </button>
@@ -148,13 +192,7 @@ class Button extends React.Component<ButtonProps, ButtonState> {
   }
 
   render() {
-    return (
-      <div>
-      {
-        this.renderButton()
-      }
-      </div>
-    )
+    return <ConfigConsumer>{this.renderButton}</ConfigConsumer>
   }
 }
 

@@ -1,6 +1,6 @@
 /* eslint no-console:0 */
 /**
- * 样式入口
+ * 样式入口 和 基础组件编译入口
  */
 
 function camelCase(name) {
@@ -26,4 +26,5 @@ req.keys().forEach(mod => {
   }
 });
 
-// module.exports = require('./components');
+module.exports = require('./components');
+
