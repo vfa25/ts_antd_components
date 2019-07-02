@@ -57,7 +57,8 @@ function finalizeCompile() {
 };
 
 // 该辅助函数仅导入了两个css文件路径，
-// 因为未找到 ExtractTextWebpackPlugin 插件抽包，css压缩具体实现存疑
+// 一般CSS抽包插件较流行的有 ExtractTextWebpackPlugin 和 mini-css-extract-plugin，
+// 这里选用了后者。
 function finalizeDist() {
   if (fs.existsSync(path.join(__dirname, './dist'))) {
     // Build less entry file: dist/antd.less

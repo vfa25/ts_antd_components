@@ -1,13 +1,13 @@
 {
-  "name": "ts-antd-components",
+  "name": "enterprise-antd",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/antd-abukii.umd.js",
-  "module": "dist/antd-abukii.es5.js",
-  "typings": "dist/types/index.d.ts",
+  "main": "dist/enterprise-antd.js",
+  "module": "components/index.tsx",
   "files": [
-    "dist"
+    "dist",
+    "components"
   ],
   "author": "vfa25",
   "repository": {
@@ -19,7 +19,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "pub": "git push origin && npm publish",
+    "pub": "sh publish.sh",
     "dev": "cross-env npx webpack-dev-server --mode=development --config examples/webpack.config.js",
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lint:js": "eslint --fix --ext .jsx --ext .js ./examples",
@@ -87,7 +87,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-runtime": "6.x",
-    "bubai": "^0.0.1",
+    "bubai": "0.0.5",
     "classnames": "^2.2.6",
     "create-react-context": "^0.3.0",
     "lodash": "^4.17.11",
@@ -101,6 +101,7 @@
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
     "@hot-loader/react-dom": "^16.8.6",
+    "@packtracker/webpack-plugin": "^2.1.0",
     "@types/classnames": "^2.2.8",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.14.10",
