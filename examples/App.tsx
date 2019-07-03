@@ -1,7 +1,7 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import Components from './demoComponents';
-const style = require('../index');
+require('../index');
 
 const e = React.createElement;
 

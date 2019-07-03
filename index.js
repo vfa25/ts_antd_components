@@ -26,5 +26,5 @@ req.keys().forEach(mod => {
   }
 });
 
+// eslint-disable-next-line import/no-unresolved
 module.exports = require('./components');
-

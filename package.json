@@ -20,7 +20,6 @@
   },
   "scripts": {
     "pub": "sh publish.sh",
-    "dev": "cross-env npx webpack-dev-server --mode=development --config examples/webpack.config.js",
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lint:js": "eslint --fix --ext .jsx --ext .js ./examples",
     "prebuild": "rimraf dist",
@@ -35,7 +34,8 @@
     "precommit": "lint-staged",
     "travis-deploy-once": "travis-deploy-once",
     "clean": "bubai run clean",
-    "dist": "bubai run dist"
+    "dist": "bubai run dist",
+    "dev": "cross-env npx webpack-dev-server --mode=development --config examples/webpack.config.js"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -87,15 +87,19 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-runtime": "6.x",
-    "bubai": "0.0.5",
+    "bubai": "^0.0.6",
     "classnames": "^2.2.6",
     "create-react-context": "^0.3.0",
+    "enterprise-antd": "^0.0.1",
+    "html-webpack-plugin": "^3.2.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-lifecycles-compat": "^3.0.4"
+    "react-lifecycles-compat": "^3.0.4",
+    "webpack": "^4.28.4",
+    "webpack-merge": "^4.2.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
@@ -133,7 +137,6 @@
     "eslint-tinker": "^0.5.0",
     "express": "^4.16.4",
     "file-loader": "^3.0.1",
-    "html-webpack-plugin": "^3.2.0",
     "husky": "^1.0.1",
     "jest": "^23.6.0",
     "jest-config": "^23.6.0",
@@ -141,6 +144,7 @@
     "less-loader": "^4.1.0",
     "lint-staged": "^8.0.0",
     "lodash.camelcase": "^4.3.0",
+    "memory-fs": "^0.4.1",
     "prettier": "^1.14.3",
     "prompt": "^1.0.0",
     "react-hot-loader": "^4.8.2",
@@ -161,9 +165,7 @@
     "typedoc": "^0.12.0",
     "typescript": "^3.0.3",
     "url-loader": "^1.1.2",
-    "webpack": "^4.28.4",
     "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.2.1",
-    "webpack-merge": "^4.2.1"
+    "webpack-dev-server": "^3.2.1"
   }
 }
