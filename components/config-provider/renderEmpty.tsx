@@ -7,6 +7,7 @@ const renderEmpty = (componentName?: string): React.ReactNode => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
       const prefix = getPrefixCls('empty');
+      console.log(prefix);
 
       switch(componentName) {
         case 'Table':

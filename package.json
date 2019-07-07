@@ -3,11 +3,13 @@
   "version": "0.0.1",
   "description": "",
   "keywords": [],
-  "main": "dist/enterprise-antd.js",
-  "module": "components/index.tsx",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "lib/index.d.ts",
   "files": [
     "dist",
-    "components"
+    "lib",
+    "es"
   ],
   "author": "vfa25",
   "repository": {
@@ -35,6 +37,7 @@
     "travis-deploy-once": "travis-deploy-once",
     "clean": "bubai run clean",
     "dist": "bubai run dist",
+    "compile": "bubai run compile",
     "dev": "cross-env npx webpack-dev-server --mode=development --config examples/webpack.config.js"
   },
   "lint-staged": {
@@ -85,9 +88,8 @@
     ]
   },
   "dependencies": {
-    "axios": "^0.18.0",
     "babel-runtime": "6.x",
-    "bubai": "^0.0.6",
+    "bubai": "git+https://github.com/vfa25/react-tools-webpack.git",
     "classnames": "^2.2.6",
     "create-react-context": "^0.3.0",
     "enterprise-antd": "^0.0.1",

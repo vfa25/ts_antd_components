@@ -13,30 +13,30 @@ const packageInfo = require('./package.json');
 // 以及新建 /lib/style/components.less 文件，并批量@import了基础组件的样式文件
 function finalizeCompile() {
   if (fs.existsSync(path.join(__dirname, './lib'))) {
-    // Build package.json version to lib/version/index.js
-    // prevent json-loader needing in user-side
-    // 这句话是指生成文件的.js后缀
-    const versionFilePath = path.join(process.cwd(), 'lib', 'version', 'index.js');
-    const versionFileContent = fs.readFileSync(versionFilePath).toString();
-    fs.writeFileSync(
-      versionFilePath,
-      versionFileContent.replace(
-        /require\(('|")\.\.\/\.\.\/package\.json('|")\)/,
-        `{ version: '${packageInfo.version}' }`,
-      )
-    )
-    // eslint-disable-next-line
-    console.log('Wrote version into lib/version/index.js');
+    // // Build package.json version to lib/version/index.js
+    // // prevent json-loader needing in user-side
+    // // 这句话是指生成文件的.js后缀
+    // const versionFilePath = path.join(process.cwd(), 'lib', 'version', 'index.js');
+    // const versionFileContent = fs.readFileSync(versionFilePath).toString();
+    // fs.writeFileSync(
+    //   versionFilePath,
+    //   versionFileContent.replace(
+    //     /require\(('|")\.\.\/\.\.\/package\.json('|")\)/,
+    //     `{ version: '${packageInfo.version}' }`,
+    //   )
+    // )
+    // // eslint-disable-next-line
+    // console.log('Wrote version into lib/version/index.js');
 
-    // Build package.json version to lib/version/index.d.ts
-    // prevent https://github.com/ant-design/ant-design/issues/4935
-    const versionDefPath = path.join(process.cwd(), 'lib', 'version', 'index.d.ts');
-    fs.writeFileSync(
-      versionDefPath,
-      `declare var _default: "${packageInfo.version}";\nexport default _default;\n`,
-    );
-    // eslint-disable-next-line
-    console.log('Wrote version into lib/version/index.d.ts');
+    // // Build package.json version to lib/version/index.d.ts
+    // // prevent https://github.com/ant-design/ant-design/issues/4935
+    // const versionDefPath = path.join(process.cwd(), 'lib', 'version', 'index.d.ts');
+    // fs.writeFileSync(
+    //   versionDefPath,
+    //   `declare var _default: "${packageInfo.version}";\nexport default _default;\n`,
+    // );
+    // // eslint-disable-next-line
+    // console.log('Wrote version into lib/version/index.d.ts');
 
     // Build a entry less file to dist/antd.less
     const componentsPath = path.join(process.cwd(), 'components');

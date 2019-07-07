@@ -157,6 +157,7 @@ class Button extends React.Component<ButtonProps, ButtonState> {
       ...rest
     } = this.props;
     const { loading, hasTwoCNChar } = this.state;
+    console.log(rest, loading);
 
     const prefixCls = getPrefixCls('btn', customizePrefixCls);
     const autoInsertSpace = autoInsertSpaceInButton !== false;
