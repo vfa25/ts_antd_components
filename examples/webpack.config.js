@@ -1,5 +1,8 @@
+/**
+ * devServer的memory files在路径 /webpack-dev-server 下
+ */
+
 const path = require('path');
-const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin');
 const webpackMerge = require('webpack-merge');
 const getWebpackConfig = require('bubai/lib/getWebpackConfig');
@@ -12,10 +15,10 @@ const config = {
   entry: {
     app: path.join(__dirname, './index.tsx'),
   },
-  output: {
-    path: path.join(__dirname, '__build__'),
-    filename: 'bundle.js', // production 中chunkhash化即可
-  },
+  // output: {
+  //   path: path.join(__dirname, '__build__'),
+  //   filename: 'bundle.js', // production 中chunkhash化即可
+  // },
   devServer: {
     host: '127.0.0.1',
     port: '9999',
@@ -30,7 +33,7 @@ const config = {
   resolve: {
     mainFiles: ['index', 'demo'],
     alias: {
-      '@components': path.resolve(__dirname, '../src'),
+      '@components': path.resolve(__dirname, '../components'),
       'react-dom': '@hot-loader/react-dom',
     },
   },
@@ -49,19 +52,12 @@ const config = {
           path.resolve(__dirname, '../node_modules'),
         ],
       },
-      {
-        enforce: 'pre',
-        test: /\.js$/,
-        loader: 'source-map-loader',
-      },
     ],
   },
   plugins: [
     new HTMLPlugin({
       template: path.join(__dirname, './template.html'),
     }),
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
   ],
 };
 module.exports = webpackMerge({}, webpackConfig, config);
