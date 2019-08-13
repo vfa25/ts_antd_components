@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from 'react'
 
 class Basic extends React.Component {
-  render() {
-    return 6;
-  }
+    render() {
+        return 6
+    }
 }
-export default Basic;
+export default Basic

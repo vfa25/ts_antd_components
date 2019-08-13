@@ -1,68 +1,54 @@
-const eslintrc = {
-  extends: ['airbnb', 'prettier', 'plugin:jest/recommended'],
-  env: {
-    browser: true,
-    node: true,
-    jasmine: true,
-    jest: true,
-    es6: true,
-  },
-  parser: 'babel-eslint',
-  plugins: ['markdown', 'react', 'babel', 'jest'],
-  rules: {
-    'react/jsx-one-expression-per-line': 0,
-    'react/prop-types': 0,
-    'react/forbid-prop-types': 0,
-    'react/jsx-indent': 0,
-    'react/jsx-wrap-multilines': ['error', { declaration: false, assignment: false }],
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: [
-          'site/**',
-          'tests/**',
-          'scripts/**',
-          '**/*.test.js',
-          '**/__tests__/*',
-          '*.config.js',
-          '**/*.md',
-        ],
-      },
+module.exports = {
+    parser: '@typescript-eslint/parser', // Specifies the ESLint parser
+    extends: [
+        'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+        'plugin:react/recommended',
+        'plugin:jsx-control-statements/recommended',
+        'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+        'plugin:prettier/recommended', // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
+        'prettier/react'
     ],
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.md'] }],
-    'jsx-a11y/no-static-element-interactions': 0,
-    'jsx-a11y/anchor-has-content': 0,
-    'jsx-a11y/click-events-have-key-events': 0,
-    'jsx-a11y/anchor-is-valid': 0,
-    'comma-dangle': ['error', 'always-multiline'],
-  },
+    'settings': {
+        'react': {
+            'version': 'detect',
+        }
+    },
+    plugins: ['@typescript-eslint', 'react', 'jsx-control-statements', 'prettier',
+        'react-hooks'
+    ],
+    env: {
+        browser: true,
+        node: true,
+        es6: true,
+        mocha: true,
+        'jsx-control-statements/jsx-control-statements': true
+    },
+    globals: {
+        $: true
+    },
+    // 配置自定义规则
+    rules: {
+        'react-hooks/rules-of-hooks': 'error',
+        'react-hooks/exhaustive-deps': 'warn',
+        'prettier/prettier': 1,
+        '@typescript-eslint/indent': ['error', 4, {
+            VariableDeclarator: 4,
+            SwitchCase: 1
+        }],
+        '@typescript-eslint/no-unused-vars': 0,
+        '@typescript-eslint/interface-name-prefix': 0,
+        '@typescript-eslint/explicit-member-accessibility': 0,
+        '@typescript-eslint/explicit-function-return-type': 0,
+        '@typescript-eslint/no-explicit-any': 0,
+        'no-console': ['warn', {
+            allow: ['warn', 'error']
+        }],
+        'eqeqeq': ['warn', 'always'],
+        // React相关校验规则
+        'react/jsx-indent': [2, 4],
+        'react/jsx-no-undef': [2, {
+            allowGlobals: true
+        }],
+        'jsx-control-statements/jsx-use-if-tag': 0
+    }
 };
-
-if (process.env.RUN_ENV === 'DEMO') {
-  eslintrc.globals = {
-    React: true,
-    ReactDOM: true,
-    mountNode: true,
-  };
-
-  Object.assign(eslintrc.rules, {
-    indent: 0,
-    'no-console': 0,
-    'no-plusplus': 0,
-    'eol-last': 0,
-    'no-script-url': 0,
-    'prefer-rest-params': 0,
-    'react/no-access-state-in-setstate': 0,
-    'react/destructuring-assignment': 0,
-    'react/no-multi-comp': 0,
-    'jsx-a11y/href-no-hash': 0,
-    'prefer-destructuring': 0, // TODO: remove later
-    'max-len': 0, // TODO: remove later
-    'consistent-return': 0, // TODO: remove later
-    'no-return-assign': 0, // TODO: remove later
-    'no-param-reassign': 0, // TODO: remove later
-    'import/no-extraneous-dependencies': 0,
-  });
-}
-
-module.exports = eslintrc;
