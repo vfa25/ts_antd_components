@@ -1,8 +1,8 @@
-import * as React from 'react'
+// eslint-disabled
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { polyfill } from 'react-lifecycles-compat'
-import { tuple } from '../_util/type'
+import { tuple, htmlRef } from '../_util/type'
 import { ConfigConsumer, ConfigConsumerProps } from '../config-provider'
 
 const rxTwoCNChar = /^[\u4e00-\u9fa5]{2}$/
@@ -68,6 +68,7 @@ export interface BaseButtonProps {
     loading?: boolean | { delay?: number }
     prefixCls?: string
     className?: string
+    children?: React.ReactNode[] | React.ReactNode
 }
 
 // 定义交差类型
@@ -77,80 +78,42 @@ export type AnchorButtonProps = {
 
 export type ButtonProps = Partial<AnchorButtonProps>
 
-interface ButtonState {
-    loading?: boolean | { delay?: number }
-    hasTwoCNChar?: boolean
-}
+function Button(props: ButtonProps) {
+    const { prefixCls: customizePrefixCls, type, children, className, ...rest } = props
 
-class Button extends React.Component<ButtonProps, ButtonState> {
-    static defultProps = {
-        loading: false
-    }
+    const loadingType: boolean | { delay?: number } = false
 
-    static propTypes = {
-        type: PropTypes.string,
-        loading: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-        className: PropTypes.string
-    }
+    const [loading, setLoading] = useState(props.loading || loadingType)
+    const [hasTwoCNChar, setHasTwoCNChar] = useState(false)
 
-    static getDerivedStateFromProps(nextProps: ButtonProps, prevState: ButtonState) {
-        if (nextProps.loading instanceof Boolean) {
-            return {
-                ...prevState,
-                loading: nextProps.loading
-            }
-        }
-        return null
-    }
-
-    private buttonNode: HTMLElement | null
-
-    constructor(props: ButtonProps) {
-        super(props)
-        this.state = {
-            loading: props.loading,
-            hasTwoCNChar: false
-        }
-    }
-
-    componentDidMount() {
-        this.fixTwoCNChar()
-    }
-
-    // 缓存ref
-    saveButtonRef = (node: HTMLElement | null) => {
-        this.buttonNode = node
-    }
-
-    fixTwoCNChar() {
-        // 边缘情况处理
-        // Fix for HOC usage like <FormatMessage />
-        if (!this.buttonNode) {
-            return
-        }
-        const buttonText = this.buttonNode.textContent || this.buttonNode.innerHTML
-        if (this.isNeedInserted() && isTwoCNChar(buttonText)) {
-            if (!this.state.hasTwoCNChar) {
-                this.setState({
-                    hasTwoCNChar: true
-                })
-            }
-        } else if (this.state.hasTwoCNChar) {
-            this.setState({
-                hasTwoCNChar: false
-            })
-        }
-    }
-
-    isNeedInserted() {
-        const { children } = this.props
+    const isNeedInserted = () => {
         return React.Children.count(children) === 1
     }
 
-    renderButton = ({ getPrefixCls, autoInsertSpaceInButton }: ConfigConsumerProps) => {
-        const { prefixCls: customizePrefixCls, type, children, className, ...rest } = this.props
-        const { loading, hasTwoCNChar } = this.state
+    // 缓存ref
+    const buttonNodeRef = useRef<htmlRef & HTMLButtonElement>(null)
 
+    const fixTwoCNChar = () => {
+        // 边缘情况处理
+        // Fix for HOC usage like <FormatMessage />
+        if (!buttonNodeRef.current) {
+            return
+        }
+        const buttonText = buttonNodeRef.current.textContent || buttonNodeRef.current.innerHTML
+        if (isNeedInserted() && isTwoCNChar(buttonText)) {
+            if (!hasTwoCNChar) {
+                setHasTwoCNChar(true)
+            }
+        } else if (hasTwoCNChar) {
+            setHasTwoCNChar(false)
+        }
+    }
+
+    useEffect(() => {
+        fixTwoCNChar()
+    })
+
+    const renderButton = ({ getPrefixCls, autoInsertSpaceInButton }: ConfigConsumerProps) => {
         const prefixCls = getPrefixCls('btn', customizePrefixCls)
         const autoInsertSpace = autoInsertSpaceInButton !== false
 
@@ -166,24 +129,28 @@ class Button extends React.Component<ButtonProps, ButtonState> {
             [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace
         })
 
-        const kids =
-            children || children === 0 ? spaceChildren(children, this.isNeedInserted()) : null
+        const kids = children || children === 0 ? spaceChildren(children, isNeedInserted()) : null
 
         // const { htmlType, ...otherProps } = rest as NativeButtonProps;
 
         const bottonNode = (
-            <button className={classes} ref={this.saveButtonRef}>
+            <button className={classes} ref={buttonNodeRef}>
                 {kids}
             </button>
         )
         return bottonNode
     }
 
-    render() {
-        return <ConfigConsumer>{this.renderButton}</ConfigConsumer>
-    }
+    return <ConfigConsumer>{renderButton}</ConfigConsumer>
+}
+Button.defaultProps = {
+    loading: false
 }
 
-polyfill(Button)
+Button.propTypes = {
+    type: PropTypes.string,
+    loading: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    className: PropTypes.string
+}
 
-export default Button
+export default React.memo(Button)
