@@ -1,9 +1,11 @@
-// eslint-disabled
 import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { tuple, htmlRef } from '../_util/type'
+import omit from 'omit.js'
+import { Icon } from 'antd'
+import { tuple, htmlRef, Omit } from '../_util/type'
 import { ConfigConsumer, ConfigConsumerProps } from '../config-provider'
+import Group from './button-group'
 
 const rxTwoCNChar = /^[\u4e00-\u9fa5]{2}$/
 const isTwoCNChar = rxTwoCNChar.test.bind(rxTwoCNChar)
@@ -62,36 +64,94 @@ function spaceChildren(children: React.ReactNode, needInserted: boolean) {
 
 const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'danger', 'link')
 export type ButtonType = (typeof ButtonTypes)[number]
+const ButtonShapes = tuple('circle', 'circle-outline', 'round')
+export type ButtonShape = (typeof ButtonShapes)[number]
+const ButtonSizes = tuple('large', 'default', 'small')
+export type ButtonSize = (typeof ButtonSizes)[number]
+const ButtonHTMLTypes = tuple('submit', 'button', 'reset')
+export type ButtonHTMLType = (typeof ButtonHTMLTypes)[number]
 
 export interface BaseButtonProps {
     type?: ButtonType
+    icon?: string
+    shape?: ButtonShape
     loading?: boolean | { delay?: number }
     prefixCls?: string
     className?: string
-    children?: React.ReactNode[] | React.ReactNode
+    size?: ButtonSize
+    ghost?: boolean
+    block?: boolean
+    children?: React.ReactNode
 }
 
-// 定义交差类型
+interface PropsDefault {
+    htmlType: string
+}
+
 export type AnchorButtonProps = {
     href: string
-} & BaseButtonProps
+    target?: string
+    onClick?: React.MouseEventHandler<HTMLElement>
+} & BaseButtonProps &
+    Omit<React.AnchorHTMLAttributes<any>, 'type' | 'onClick'> // eslint-disable-line @typescript-eslint/indent
 
-export type ButtonProps = Partial<AnchorButtonProps>
+export type NativeButtonProps = {
+    htmlType?: ButtonHTMLType
+    onClick?: React.MouseEventHandler<HTMLElement>
+} & BaseButtonProps &
+    Omit<React.ButtonHTMLAttributes<any>, 'type' | 'onClick'> // eslint-disable-line @typescript-eslint/indent
 
-function Button(props: ButtonProps) {
-    const { prefixCls: customizePrefixCls, type, children, className, ...rest } = props
+export type ButtonProps = Partial<AnchorButtonProps & NativeButtonProps>
 
-    const loadingType: boolean | { delay?: number } = false
+interface ExportType<E> extends React.FC<E> {
+    Group: typeof Group
+}
 
-    const [loading, setLoading] = useState(props.loading || loadingType)
+export const Button: ExportType<ButtonProps> = props => {
+    const {
+        prefixCls: customizePrefixCls,
+        type,
+        shape,
+        size,
+        className,
+        children,
+        icon,
+        ghost,
+        loading: _loadingProp,
+        block,
+        onClick,
+        ...rest
+    } = props
+
+    const [loading, setLoading] = useState(props.loading)
+    let delayTimeout: number
     const [hasTwoCNChar, setHasTwoCNChar] = useState(false)
 
-    const isNeedInserted = () => {
-        return React.Children.count(children) === 1
-    }
-
     // 缓存ref
-    const buttonNodeRef = useRef<htmlRef & HTMLButtonElement>(null)
+    const buttonNodeRef = useRef<htmlRef & HTMLButtonElement & HTMLAnchorElement>(null)
+
+    useEffect(() => {
+        if (_loadingProp instanceof Boolean) {
+            setLoading(_loadingProp)
+        }
+
+        if (_loadingProp && typeof _loadingProp !== 'boolean' && _loadingProp.delay) {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            delayTimeout = window.setTimeout(() => setLoading(_loadingProp), _loadingProp.delay)
+        } else {
+            setLoading(_loadingProp)
+        }
+
+        return () => {
+            if (_loadingProp && typeof _loadingProp !== 'boolean') {
+                clearTimeout(delayTimeout)
+            }
+        }
+    }, [_loadingProp])
+
+    useEffect(() => {
+        fixTwoCNChar()
+    })
 
     const fixTwoCNChar = () => {
         // 边缘情况处理
@@ -109,9 +169,18 @@ function Button(props: ButtonProps) {
         }
     }
 
-    useEffect(() => {
-        fixTwoCNChar()
-    })
+    const handleClick: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = e => {
+        if (!!loading) {
+            return
+        }
+        if (onClick) {
+            ;(onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)(e)
+        }
+    }
+
+    const isNeedInserted = () => {
+        return React.Children.count(children) === 1 && !icon
+    }
 
     const renderButton = ({ getPrefixCls, autoInsertSpaceInButton }: ConfigConsumerProps) => {
         const prefixCls = getPrefixCls('btn', customizePrefixCls)
@@ -119,22 +188,60 @@ function Button(props: ButtonProps) {
 
         // large => lg
         // small => sm
-        // let sizeCls = '';
-        // switch (size) {
-        //   case ''
-        // }
+        let sizeCls = ''
+        switch (size) {
+            case 'large':
+                sizeCls = 'lg'
+                break
+            case 'small':
+                sizeCls = 'sm'
+                break
+            default:
+                break
+        }
 
         const classes = classNames(prefixCls, className, {
             [`${prefixCls}-${type}`]: type,
-            [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace
+            [`${prefixCls}-${shape}`]: shape,
+            [`${prefixCls}-${sizeCls}`]: sizeCls,
+            [`${prefixCls}-icon-only`]: !children && children !== 0 && icon,
+            [`${prefixCls}-loading`]: loading,
+            [`${prefixCls}-background-ghost`]: ghost,
+            [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace,
+            [`${prefixCls}-block`]: block
         })
+        const iconType = loading ? 'loading' : icon
+        const iconNode = iconType ? <Icon type={iconType} /> : null
+        const kids =
+            children || children === 0
+                ? spaceChildren(children, isNeedInserted() && autoInsertSpace)
+                : null
 
-        const kids = children || children === 0 ? spaceChildren(children, isNeedInserted()) : null
-
-        // const { htmlType, ...otherProps } = rest as NativeButtonProps;
+        const linkButtonRestProps = omit(rest as AnchorButtonProps & PropsDefault, ['htmlType'])
+        if (linkButtonRestProps.href !== undefined) {
+            return (
+                <a
+                    {...linkButtonRestProps}
+                    className={classes}
+                    onClick={handleClick}
+                    ref={buttonNodeRef}
+                >
+                    {iconNode}
+                    {kids}
+                </a>
+            )
+        }
+        const { htmlType, ...otherProps } = rest as NativeButtonProps
 
         const bottonNode = (
-            <button className={classes} ref={buttonNodeRef}>
+            <button
+                {...(otherProps as NativeButtonProps)}
+                type={htmlType}
+                className={classes}
+                onClick={handleClick}
+                ref={buttonNodeRef}
+            >
+                {iconNode}
                 {kids}
             </button>
         )
@@ -143,14 +250,26 @@ function Button(props: ButtonProps) {
 
     return <ConfigConsumer>{renderButton}</ConfigConsumer>
 }
+
 Button.defaultProps = {
-    loading: false
+    loading: false,
+    ghost: false,
+    block: false,
+    htmlType: 'button'
 }
 
 Button.propTypes = {
-    type: PropTypes.string,
+    type: PropTypes.oneOf(ButtonTypes),
+    icon: PropTypes.string,
+    shape: PropTypes.oneOf(ButtonShapes),
+    htmlType: PropTypes.oneOf(ButtonHTMLTypes),
     loading: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-    className: PropTypes.string
+    className: PropTypes.string,
+    size: PropTypes.oneOf(ButtonSizes),
+    onClick: PropTypes.func,
+    block: PropTypes.bool
 }
 
-export default React.memo(Button)
+Button.Group = Group
+
+export default Button

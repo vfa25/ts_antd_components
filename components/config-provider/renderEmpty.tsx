@@ -1,7 +1,10 @@
 import * as React from 'react'
 // import Empty from '../empty';
 import { ConfigConsumer, ConfigConsumerProps } from '.'
-const Empty = () => <div></div>
+interface EmptyType {
+    className?: string
+}
+const Empty = (props: EmptyType) => <div {...props}></div>
 
 const renderEmpty = (componentName?: string): React.ReactNode => (
     <ConfigConsumer>
@@ -18,7 +21,7 @@ const renderEmpty = (componentName?: string): React.ReactNode => (
                 case 'Transfer':
                 case 'Mentions':
                     // return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} className={`${prefix}-small`}
-                    return <Empty />
+                    return <Empty className={`${prefix}-small`} />
                 default:
                     return <Empty />
             }
